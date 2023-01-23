@@ -6,4 +6,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: sudo dpkg --add-architecture i386
-      - run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git
+      - run: apt-get update
+      - run: apt-get install -y multiarch-support libc6-dev-i386 libx11-dev:i386 libxext-dev:i386 zip
+      - run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git /tmp/inferno-os
+      - run: pushd /tmp/inferno-os
+      - run: sed -ri 's/usr\/inferno/tmp\/inferno-os/' mkconfig
+      - run: sed -ri 's/SYSHOST=Plan9/SYSHOST=Linux/' mkconfig
+      - run: sed -ri 's/#OBJTYPE/OBJTYPE/' mkconfig
+      - run: sed -ri 's/OBJTYPE=\$/#OBJTYPE=\$/' mkconfig
+      - run: ./makemk.sh
+      - run: export PATH=$PWD/Linux/386/bin/:$PATH
+      - run: mk nuke
+      - run: mk mkdirs
+      - run: mk install
+      - run: cd os/thumb2
+      - run: mk
+      - popd
