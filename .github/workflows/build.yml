@@ -5,5 +5,5 @@ jobs:
   clone-and-build-repo:
     runs-on: ubuntu-latest
     steps:
-      - run: dpkg --add-architecture i386
+      - run: sudo dpkg --add-architecture i386
       - run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git
