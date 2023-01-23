@@ -21,4 +21,4 @@ jobs:
       - run: mk install
       - run: cd os/thumb2
       - run: mk
-      - popd
+      - run: popd
