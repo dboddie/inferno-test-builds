@@ -1,0 +1,8 @@
+name: test-builds
+run-name: Build Inferno
+on: [push]
+jobs:
+  clone-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls
