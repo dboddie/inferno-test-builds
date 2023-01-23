@@ -2,7 +2,8 @@ name: test-builds
 run-name: Build Inferno
 on: [push]
 jobs:
-  clone-repo:
+  clone-and-build-repo:
     runs-on: ubuntu-latest
     steps:
-      - run: git --help
+      - run: dpkg --add-architecture i386
+      - run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git
