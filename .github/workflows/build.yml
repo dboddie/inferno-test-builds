@@ -9,9 +9,8 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install -y libc6-dev-i386 libx11-dev:i386 libxext-dev:i386 zip
       - run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git inferno-os
-      - run: cd inferno-os
-          pwd
-          ls
+      - run: |
+          cd $GITHUB_WORKSPACE/inferno-os
           sed -ri 's|/usr\/inferno|'$PWD'|' mkconfig
           sed -ri 's/SYSHOST=Plan9/SYSHOST=Linux/' mkconfig
           sed -ri 's/#OBJTYPE/OBJTYPE/' mkconfig
