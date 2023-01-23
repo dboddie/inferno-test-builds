@@ -28,6 +28,7 @@ jobs:
       - name: Build a port
         run: |
           cd $GITHUB_WORKSPACE/inferno-os
+          export PATH=$PWD/Linux/386/bin/:$PATH
           cd appl/tiny
           mk install
           cd ../..
