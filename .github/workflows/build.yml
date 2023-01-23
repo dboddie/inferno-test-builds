@@ -5,11 +5,15 @@ jobs:
   clone-and-build-repo:
     runs-on: ubuntu-20.04
     steps:
-      - run: sudo dpkg --add-architecture i386
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y libc6-dev-i386
-      - run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git inferno-os
-      - run: |
+      - name: Get dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y libc6-dev-i386
+      - name: Clone the repository
+        run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git inferno-os
+      - name: Build the host system
+        run: |
           cd $GITHUB_WORKSPACE/inferno-os
           sed -ri 's|/usr\/inferno|'$PWD'|' mkconfig
           sed -ri 's/SYSHOST=Plan9/SYSHOST=Linux/' mkconfig
@@ -21,8 +25,17 @@ jobs:
           mk nuke
           mk mkdirs
           mk install
+      - name: Build a port
+        run: |
+          cd $GITHUB_WORKSPACE/inferno-os
           cd appl/tiny
           mk install
           cd ../..
           cd os/stm32f405
           mk
+      - name: Archive the build product
+        uses: actions/upload-artifact@v3
+        with:
+          name: kernel
+          path: |
+            inferno-os/os/stm32f405/kernel
