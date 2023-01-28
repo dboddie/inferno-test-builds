@@ -18,19 +18,9 @@ jobs:
           cd tools/elf2uf2
           cmake .
           make
-      - name: Clone the libpico repository and built it
+      - name: Clone the Inferno Pico repository and build the host system
         run: |
-          git clone https://github.com/caerwynj/libpico
-          cd libpico
-          mkdir lib
-          sed -ri 's|/home/pi/github/pico-labs|'$PWD'|' mkconfig
-          sed -ri 's|/home/pi/pico|'$PWD/..'|' mkconfig
-          mk
-      - name: Clone the Inferno Pico repository
-        run: git clone -b pico https://github.com/caerwynj/inferno-os inferno-pico
-      - name: Build the host system
-        run: |
-          cd $GITHUB_WORKSPACE/inferno-pico
+          git clone -b pico https://github.com/caerwynj/inferno-os inferno-pico
           cp mkconfig mkconfig-host
           cp mkconfig mkconfig-pico
           sed -ri 's|\$HOME/github/inferno-pico|'$PWD'|' mkconfig-pico
@@ -46,6 +36,15 @@ jobs:
           cp libmath/FPcontrol-Linux-old.c libmath/FPcontrol-Linux.c
           sed -ri 's|\$HOME/github/pico-labs|'$PWD/../libpico'|' libpico/mkfile
           mk install
+      - name: Clone the libpico repository and built it
+        run: |
+          git clone https://github.com/caerwynj/libpico
+          cd libpico
+          mkdir lib
+          sed -ri 's|/home/pi/github/pico-labs|'$PWD'|' mkconfig
+          sed -ri 's|/home/pi/pico|'$PWD/..'|' mkconfig
+          export PATH=$PWD/../inferno-pico/Linux/386/bin/:$PATH
+          mk
       - name: Build the libraries for the Pico then the port itself
         run: |
           cd $GITHUB_WORKSPACE/inferno-pico
