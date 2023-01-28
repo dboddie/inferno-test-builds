@@ -28,6 +28,7 @@ jobs:
           sed -ri 's|\$HOME/github/inferno-pico|'$PWD'|' mkconfig-host
           sed -ri 's|SYSTARG=Pico|SYSTARG=Linux|' mkconfig-host
           sed -ri 's|OBJTYPE=arm|OBJTYPE=386|' mkconfig-host
+          sed -ri 's/\temu/#\temu/' mkfile
           cp mkconfig-host mkconfig
           ./makemk.sh
           export PATH=$PWD/Linux/386/bin/:$PATH
