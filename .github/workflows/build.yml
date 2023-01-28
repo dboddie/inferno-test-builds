@@ -63,6 +63,6 @@ jobs:
       - name: Archive the build product
         uses: actions/upload-artifact@v3
         with:
-          name: kernel
+          name: ipico
           path: |
             inferno-pico/os/pico/ipico.uf2
