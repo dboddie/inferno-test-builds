@@ -21,6 +21,7 @@ jobs:
       - name: Clone the Inferno Pico repository and build the host system
         run: |
           git clone -b pico https://github.com/caerwynj/inferno-os inferno-pico
+          cd inferno-pico
           cp mkconfig mkconfig-host
           cp mkconfig mkconfig-pico
           sed -ri 's|\$HOME/github/inferno-pico|'$PWD'|' mkconfig-pico
