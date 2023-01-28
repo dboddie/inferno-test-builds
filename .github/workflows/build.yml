@@ -9,34 +9,58 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y libc6-dev-i386
-      - name: Clone the repository
-        run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git inferno-os
+          sudo apt-get install -y libc6-dev-i386 cmake
+      - name: Clone the pico-sdk repository and build elf2uf2
+        run: |
+          git clone https://github.com/raspberrypi/pico-sdk
+          cd pico-sdk
+          cmake .
+          cd tools/elf2uf2
+          cmake .
+          make
+      - name: Clone the libpico repository and built it
+        run: |
+          git clone https://github.com/caerwynj/libpico
+          cd libpico
+          mkdir lib
+          sed -ri 's|/home/pi/github/pico-labs|'$PWD'|' mkconfig
+          sed -ri 's|/home/pi/pico|'$PWD/..'|' mkconfig
+          mk
+      - name: Clone the Inferno Pico repository
+        run: git clone -b pico https://github.com/caerwynj/inferno-os inferno-pico
       - name: Build the host system
         run: |
-          cd $GITHUB_WORKSPACE/inferno-os
-          sed -ri 's|/usr\/inferno|'$PWD'|' mkconfig
-          sed -ri 's/SYSHOST=Plan9/SYSHOST=Linux/' mkconfig
-          sed -ri 's/#OBJTYPE/OBJTYPE/' mkconfig
-          sed -ri 's/OBJTYPE=\$/#OBJTYPE=\$/' mkconfig
-          sed -ri 's/\temu/#\temu/' mkfile
+          cd $GITHUB_WORKSPACE/inferno-pico
+          cp mkconfig mkconfig-host
+          cp mkconfig mkconfig-pico
+          sed -ri 's|\$HOME/github/inferno-pico|'$PWD'|' mkconfig-pico
+          sed -ri 's|\$HOME/github/inferno-pico|'$PWD'|' mkconfig-host
+          sed -ri 's|SYSTARG=Pico|SYSTARG=Linux|' mkconfig-host
+          sed -ri 's|OBJTYPE=arm|OBJTYPE=386|' mkconfig-host
+          cp mkconfig-host mkconfig
           ./makemk.sh
           export PATH=$PWD/Linux/386/bin/:$PATH
+          echo 'Pico/arm/lib' >> lib/emptydirs
           mk nuke
           mk mkdirs
+          cp libmath/FPcontrol-Linux-old.c libmath/FPcontrol-Linux.c
+          sed -ri 's|\$HOME/github/pico-labs|'$PWD/../libpico'|' libpico/mkfile
           mk install
-      - name: Build a port
+      - name: Build the libraries for the Pico then the port itself
         run: |
-          cd $GITHUB_WORKSPACE/inferno-os
-          export PATH=$PWD/Linux/386/bin/:$PATH
-          cd appl/tiny
-          mk install
-          cd ../..
-          cd os/stm32f405
-          mk
+          cd $GITHUB_WORKSPACE/inferno-pico
+          cp mkconfig-pico mkconfig
+          cd libmath && mk clean && mk install && cd ..
+          cd libinterp && mk clean && mk install && cd ..
+          cd os/pico
+          sed -ri 's|PICOROOT=/home/pi/github/pico-labs|PICOROOT='$PWD/../../../libpico'|' mkconfig
+          sed -ri 's|ROOT=/home/pi/github/inferno-pico|ROOT='$PWD/../..'|' mkconfig
+          sed -ri 's|/home/pi/pico/|'$PWD/../../../'|' mkconfig
+          sed -ri 's|strip |arm-none-eabi-strip |' mkfile
+          PATH=../../../pico-sdk/tools/elf2uf2:$PATH mk
       - name: Archive the build product
         uses: actions/upload-artifact@v3
         with:
           name: kernel
           path: |
-            inferno-os/os/stm32f405/kernel
+            inferno-pico/os/pico/ipico.uf2
