@@ -50,10 +50,10 @@ jobs:
       - name: Build the libraries for the Pico then the port itself
         run: |
           cd $GITHUB_WORKSPACE/inferno-pico
+          export PATH=$PWD/Linux/386/bin/:$PATH
           cp mkconfig-pico mkconfig
           cd libmath && mk clean && mk install && cd ..
           cd libinterp && mk clean && mk install && cd ..
-          export PATH=$PWD/Linux/386/bin/:$PATH
           cd os/pico
           sed -ri 's|PICOROOT=/home/pi/github/pico-labs|PICOROOT='$PWD/../../../libpico'|' mkconfig
           sed -ri 's|ROOT=/home/pi/github/inferno-pico|ROOT='$PWD/../..'|' mkconfig
