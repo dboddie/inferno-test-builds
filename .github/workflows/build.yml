@@ -9,7 +9,7 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y libc6-dev-i386 cmake
+          sudo apt-get install -y libc6-dev-i386 cmake gcc-arm-none-eabi
       - name: Clone the pico-sdk repository and build elf2uf2
         run: |
           git clone https://github.com/raspberrypi/pico-sdk
