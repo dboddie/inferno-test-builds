@@ -25,18 +25,3 @@ jobs:
           mk nuke
           mk mkdirs
           mk install
-      - name: Build a port
-        run: |
-          cd $GITHUB_WORKSPACE/inferno-os
-          export PATH=$PWD/Linux/386/bin/:$PATH
-          cd appl/tiny
-          mk install
-          cd ../..
-          cd os/stm32f405
-          mk
-      - name: Archive the build product
-        uses: actions/upload-artifact@v3
-        with:
-          name: kernel
-          path: |
-            inferno-os/os/stm32f405/kernel
