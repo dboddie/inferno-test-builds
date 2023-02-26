@@ -39,4 +39,4 @@ jobs:
         with:
           name: inferno-ubuntu-22-04-i386
           path: |
-            inferno-os
+            inferno-os/Linux/386
