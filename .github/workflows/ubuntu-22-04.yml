@@ -40,3 +40,4 @@ jobs:
           name: inferno-ubuntu-22-04-i386
           path: |
             inferno-os/Linux/386
+            inferno-os/dis/emuinit.dis
