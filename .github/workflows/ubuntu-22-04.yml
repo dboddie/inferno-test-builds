@@ -34,10 +34,10 @@ jobs:
           mk nuke
           mk mkdirs
           mk install
-      - name: Archive the build product
-        uses: actions/upload-artifact@v3
-        with:
-          name: inferno-ubuntu-22-04-i386
-          path: |
-            inferno-os/Linux/386
-            inferno-os/dis/emuinit.dis
+#      - name: Archive the build product
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: inferno-ubuntu-22-04-i386
+#          path: |
+#            inferno-os/Linux/386
+#            inferno-os/dis/emuinit.dis
