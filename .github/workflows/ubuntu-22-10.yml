@@ -1,0 +1,43 @@
+name: test-builds
+run-name: Build Inferno for Ubuntu 22.10
+on: [push, workflow_dispatch]
+
+jobs:
+  clone-and-build-repo-ubuntu-22-10:
+    runs-on: ubuntu-22.10
+    steps:
+      - name: Get dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y libc6-dev-i386 libx11-dev:i386 libxext-dev:i386
+      - name: Clone the repository
+        run: git clone https://github.com/inferno-os/inferno-os.git inferno-os
+      - name: Build the host system
+        run: |
+          cd $GITHUB_WORKSPACE/inferno-os
+          sed -ri 's|/usr\/inferno|'$PWD'|' mkconfig
+          sed -ri 's/SYSHOST=Plan9/SYSHOST=Linux/' mkconfig
+          sed -ri 's/#OBJTYPE/OBJTYPE/' mkconfig
+          sed -ri 's/OBJTYPE=\$/#OBJTYPE=\$/' mkconfig
+          sed -ri 's/int\texdebug/extern int\texdebug/g' emu/port/devcons.c
+          sed -ri 's/char\*\tgkscanid/extern char\*\tgkscanid/g' emu/port/devcons.c
+          sed -ri 's/int\tbflag/extern int\tbflag/g' emu/port/dis.c
+          sed -ri 's/void\t\(\*coher/extern void\t\(\*coher/g' emu/port/fns.h
+          sed -ri 's/\tpthread_yield\(\)/\tsched_yield\(\)/g' emu/port/kproc-pthreads.c
+          sed -ri 's/char\*\ttkfont/extern char\*\ttkfont/g' emu/port/main.c
+          sed -ri 's/int\ttkstylus/extern int\ttkstylus/g' emu/port/main.c
+          echo 'void     (*coherence)(void);' >> emu/port/lock.c
+          sed -ri 's/ndate\\/ndate\nNOTPLAN9=8a 8c 8l mk ksize kstrip md5sum mkext ndate/g' utils/mkfileemu
+          ./makemk.sh
+          export PATH=$PWD/Linux/386/bin/:$PATH
+          mk nuke
+          mk mkdirs
+          mk install
+#      - name: Archive the build product
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: inferno-ubuntu-22-04-i386
+#          path: |
+#            inferno-os/Linux/386
+#            inferno-os/dis/emuinit.dis
