@@ -34,6 +34,7 @@ jobs:
           mk install
           cd ../..
           cd os/apollo3
+          mk appl
           mk
       - name: Archive the build product
         uses: actions/upload-artifact@v3
