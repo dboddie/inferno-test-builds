@@ -12,7 +12,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libc6-dev-i386
       - name: Clone the repository
-        run: git clone -b apollo3 https://github.com/dboddie/inferno-os.git inferno-os
+        run: git clone -b apollo3-fp https://github.com/dboddie/inferno-os.git inferno-os
       - name: Build the host system
         run: |
           cd $GITHUB_WORKSPACE/inferno-os
