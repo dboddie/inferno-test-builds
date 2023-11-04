@@ -34,6 +34,7 @@ jobs:
           mk install
           cd ../..
           cd os/teensy41mm
+          sed -ri 's/\ \-a//' mkfile
           mk appl
           mk
       - name: Archive the build product
