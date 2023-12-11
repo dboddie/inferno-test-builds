@@ -1,6 +1,7 @@
-name: test-builds
+name: test-rpi-builds
 run-name: Build Inferno
 on: [push]
+
 jobs:
   clone-and-build-repo:
     runs-on: ubuntu-20.04
@@ -11,7 +12,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libc6-dev-i386
       - name: Clone the repository
-        run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git inferno-os
+        run: git clone https://github.com/yshurik/inferno-rpi.git inferno-os
       - name: Build the host system
         run: |
           cd $GITHUB_WORKSPACE/inferno-os
@@ -20,6 +21,7 @@ jobs:
           sed -ri 's/#OBJTYPE/OBJTYPE/' mkconfig
           sed -ri 's/OBJTYPE=\$/#OBJTYPE=\$/' mkconfig
           sed -ri 's/\temu/#\temu/' mkfile
+          sed -ri 's/cp irpi/#cp irpi/' os/rpi/mkfile
           ./makemk.sh
           export PATH=$PWD/Linux/386/bin/:$PATH
           mk nuke
@@ -32,11 +34,11 @@ jobs:
           cd appl/tiny
           mk install
           cd ../..
-          cd os/stm32f405
+          cd os/rpi
           mk
       - name: Archive the build product
         uses: actions/upload-artifact@v3
         with:
           name: kernel
           path: |
-            inferno-os/os/stm32f405/kernel
+            inferno-os/os/rpi/irpi
