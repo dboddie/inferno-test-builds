@@ -10,7 +10,7 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y libc6-dev-i386
+          sudo apt-get install -y libc6-dev-i386 python3-intelhex
       - name: Clone the repository
         run: git clone -b cortexm https://github.com/dboddie/inferno-os.git inferno-os
       - name: Build the host system
@@ -41,7 +41,7 @@ jobs:
           popd
           pushd os/teensy41mm
           mk
-          cp kernel ../../builds/teensy41mm-kernel
+          cp kernel.hex ../../builds/teensy41mm-kernel.hex
           popd
       - name: Archive the build product
         uses: actions/upload-artifact@v3
