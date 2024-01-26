@@ -36,7 +36,6 @@ jobs:
           cp kernel ../../builds/stm32f405-kernel
           popd
           pushd os/apollo3
-          mk appl
           mk
           cp kernel ../../builds/apollo3-kernel
           popd
