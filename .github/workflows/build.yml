@@ -44,7 +44,7 @@ jobs:
           cp kernel.hex ../../builds/teensy41mm-kernel.hex
           popd
       - name: Archive the build product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: builds
           path: |
