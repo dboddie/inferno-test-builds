@@ -1,6 +1,7 @@
 name: test-builds
 run-name: Build Inferno
-on: [push]
+on: [push, workflow_dispatch]
+
 jobs:
   clone-and-build-repo:
     runs-on: ubuntu-20.04
@@ -11,7 +12,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libc6-dev-i386
       - name: Clone the repository
-        run: git clone -b stm32f405 https://github.com/dboddie/inferno-os.git inferno-os
+        run: git clone -b cortexm https://github.com/dboddie/inferno-os.git inferno-os
       - name: Build the host system
         run: |
           cd $GITHUB_WORKSPACE/inferno-os
@@ -25,18 +26,27 @@ jobs:
           mk nuke
           mk mkdirs
           mk install
-      - name: Build a port
+      - name: Build the ports
         run: |
           cd $GITHUB_WORKSPACE/inferno-os
           export PATH=$PWD/Linux/386/bin/:$PATH
-          cd appl/tiny
-          mk install
-          cd ../..
-          cd os/stm32f405
+          mkdir builds
+          pushd os/stm32f405
           mk
+          cp kernel ../../builds/stm32f405-kernel
+          popd
+          pushd os/apollo3
+          mk appl
+          mk
+          cp kernel ../../builds/apollo3-kernel
+          popd
+          pushd os/teensy41mm
+          mk
+          cp kernel ../../builds/teensy41mm-kernel
+          popd
       - name: Archive the build product
         uses: actions/upload-artifact@v3
         with:
-          name: kernel
+          name: builds
           path: |
-            inferno-os/os/stm32f405/kernel
+            inferno-os/builds
